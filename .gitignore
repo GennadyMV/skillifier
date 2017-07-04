@@ -22,7 +22,24 @@
 hs_err_pid*
 
 target
+applog.txt
 
 # Intellij configs
 .idea
 *.iml
+
+# Production settings
+skillifier/src/main/resources/application-production.properties
+
+# "Tilde" files
+*~
+
+#test files
+skillifier/src/test/testResources/*
+!skillifier/src/test/testResources/data.zip
+!skillifier/src/test/testResources/exe.zip
+/skillifier/submissions/
+
+#langs
+tmc-langs/*
+
