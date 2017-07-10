@@ -30,12 +30,10 @@ public class ExerciseListingService {
      * @return (List of type Exercise) The list of Exercises
      */
     public List<Exercise> addUserSpecificInfoToExercises(User user, String courseName) {
-        List<Exercise> exercises = exerciseDao.findExercises(courseName);
+        List<Exercise> exercises = exerciseDao.findExercisesByCourse(courseName);
         List<UserExercise> userExercises = userExerciseDao.findByUserAndCourseName(user, courseName);
         Map<String, Exercise> map = new HashMap<>();
-        for (Exercise exercise : exercises) {
-            map.put(exercise.getName(), exercise);
-        }
+        exercises.forEach(exercise -> map.put(exercise.getName(), exercise));
         setExerciseFields(userExercises, map);
         return exercises;
     }

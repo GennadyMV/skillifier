@@ -29,7 +29,7 @@ public class CoreController extends BaseController {
         return submissionService.submitExerciseZip(token, zip);
     }
     
-    @RequestMapping("/courses/{courseName}/uexercises")
+    @RequestMapping("/courses/{courseName}/user/exercises")
     public String getCourseExercisesByOAuth(@PathVariable String courseName, @RequestParam String token) {
         return jsonService.toJson(listingService.addUserSpecificInfoToExercises(userService.oauthFromServer(token), courseName));
     }

@@ -26,7 +26,7 @@ public class BrowserController extends BaseController {
 
     @RequestMapping("/courses/{courseName}/exercises")
     public String getCourseExercises(@PathVariable String courseName) {
-        return jsonService.toJson(exerciseDao.findExercises(courseName));
+        return jsonService.toJson(exerciseDao.findExercisesByCourse(courseName));
     }
 
     @RequestMapping("/users/{username}/skills")
