@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -28,7 +29,7 @@ public class User implements Serializable {
     @Id
     private String username;
     
-    private UserExercise assignedExercise;
+    private Optional<UserExercise> assignedExercise;
     
     @OneToMany(mappedBy = "skill")
     private Set<UserSkill> skills;
@@ -59,12 +60,12 @@ public class User implements Serializable {
         exercises.add(new UserExercise(this, exercise, true, true));
     }
     
-    public UserExercise getAssignedExercise() {
+    public Optional<UserExercise> getAssignedExercise() {
         return assignedExercise;
     }
     
     public void setAssignedExercise(UserExercise exercise) {
-        this.assignedExercise = exercise;
+        this.assignedExercise = Optional.of(exercise);
     }
     
 }

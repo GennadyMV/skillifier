@@ -17,7 +17,7 @@ public interface UserDao extends CrudRepository<User, Long> {
      * @param username Username as a String
      * @return (User) found User, or null if one doesn't exist
      */
-    public User findByUsername(String username);
+    User findByUsername(String username);
     
     /**
      * Find the Skills that the User currently has/is tracking.
@@ -30,6 +30,6 @@ public interface UserDao extends CrudRepository<User, Long> {
      */
     @Query("SELECT DISTINCT us FROM Skill s, UserSkill us, User u"
             + " WHERE s.id = us.skill AND us.user = u AND u.username = :username")
-    public List<UserSkill> findUserSkills(@Param("username") String username);
+    List<UserSkill> findUserSkills(@Param("username") String username);
     
 }

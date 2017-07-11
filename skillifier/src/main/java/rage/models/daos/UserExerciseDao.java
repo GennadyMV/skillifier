@@ -21,7 +21,7 @@ public interface UserExerciseDao extends CrudRepository<UserExercise, Long> {
      * @param user The User whose Exercises you want to fetch
      * @return (List of type UserExercise) The list of Exercises in UserExercise @ManyToMany wrapper Class
      */
-    public List<UserExercise> findByUser(@Param("user") User user);
+    List<UserExercise> findByUser(@Param("user") User user);
 
     /**
      * Find and return a list of Exercises the User has tracked/is currently tracking
@@ -34,7 +34,7 @@ public interface UserExerciseDao extends CrudRepository<UserExercise, Long> {
             + " WHERE ue.exercise = e.id AND s.theme = t.id AND t.week = w.id AND w.course = c.id"
             + " AND es.exerciseSkill = s.id AND es.skillExercise = e.id"
             + " AND c.name = :courseName AND ue.user = :user")
-    public List<UserExercise> findByUserAndCourseName(@Param("user") User user, @Param("courseName") String courseName);
+    List<UserExercise> findByUserAndCourseName(@Param("user") User user, @Param("courseName") String courseName);
 
     
 }

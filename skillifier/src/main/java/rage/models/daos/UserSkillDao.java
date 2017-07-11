@@ -23,7 +23,7 @@ public interface UserSkillDao extends CrudRepository<UserSkill, Long> {
     @Query("SELECT us FROM Week w, Theme t, Skill s, UserSkill us"
             + " WHERE s.id = us.skill AND us.user = :user AND t.week = w.id"
             + " AND s.theme = t.id AND w.weekNumber = :weekNumber")
-    public List<UserSkill> findByUserAndWeek(
+    List<UserSkill> findByUserAndWeek(
             @Param("weekNumber") int weekNumber, @Param("user") User user);
     
     /**
@@ -34,13 +34,13 @@ public interface UserSkillDao extends CrudRepository<UserSkill, Long> {
      * @param skill The Skill you're looking for
      * @return The Skill in UserSkill @ManyToMany wrapper Class
      */
-    public UserSkill findByUserAndSkill(User user, Skill skill);
+    UserSkill findByUserAndSkill(User user, Skill skill);
 
     /**
      * Find all the Skills the User has marked as started/done.
      * @param user The User whose Skills you want to fetch
      * @return (List of type UserSkill) The list of Skills in UserSkill @ManyToMany wrapper Class
      */
-    public List<UserSkill> findByUser(User user);
+    List<UserSkill> findByUser(User user);
 
 }

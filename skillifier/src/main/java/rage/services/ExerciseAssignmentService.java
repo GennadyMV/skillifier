@@ -27,18 +27,25 @@ import rage.models.daos.UserSkillDao;
 
 @Service
 @Transactional
-@SuppressWarnings("nullness")
 public class ExerciseAssignmentService {
 
-    @Autowired private SkillDao skillDao;
-    @Autowired private UserDao userDao;
-    @Autowired private UserExerciseDao userExerciseDao;
-    @Autowired private UserSkillDao userSkillDao;
+    private final SkillDao skillDao;
+    private final UserDao userDao;
+    private final UserExerciseDao userExerciseDao;
+    private final UserSkillDao userSkillDao;
     
     // Configuration
     
     private static final double SKILL_IGNORE_PERCENTAGE = 90;
-    
+
+    @Autowired
+    public ExerciseAssignmentService(SkillDao skillDao, UserDao userDao, UserExerciseDao userExerciseDao, UserSkillDao userSkillDao) {
+        this.skillDao = skillDao;
+        this.userDao = userDao;
+        this.userExerciseDao = userExerciseDao;
+        this.userSkillDao = userSkillDao;
+    }
+
     private void addZeroedSkills(Map<Skill, Double> user, List<Skill> course, List<Skill> ignored) {
         for (Skill skill : course) {
             if (!user.containsKey(skill) && !ignored.contains(skill)) {
@@ -124,7 +131,7 @@ public class ExerciseAssignmentService {
             user.setAssignedExercise(new UserExercise(user, exercise, false, false));
             userDao.save(user);
         }
-        return user.getAssignedExercise().getExercise();
+        return user.getAssignedExercise().get().getExercise();
     }
     
 }

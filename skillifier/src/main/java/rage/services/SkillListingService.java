@@ -15,11 +15,16 @@ import rage.models.daos.SkillDao;
 import rage.models.daos.UserSkillDao;
 
 @Service
-@SuppressWarnings("nullness")
 public class SkillListingService {
     
-    @Autowired SkillDao skillDao;
-    @Autowired UserSkillDao userSkillDao;
+    final SkillDao skillDao;
+    final UserSkillDao userSkillDao;
+
+    @Autowired
+    public SkillListingService(SkillDao skillDao, UserSkillDao userSkillDao) {
+        this.skillDao = skillDao;
+        this.userSkillDao = userSkillDao;
+    }
 
     /**
      * Find the Skills of the specified Course (per User) to display in the Netbeans plugin Timeline.
@@ -32,13 +37,12 @@ public class SkillListingService {
     public List<Skill> getSkillsWithUserSpecificInformation(@PathVariable String courseName, User user) {
         List<Skill> skills = skillDao.findByCourse(courseName);
         List<UserSkill> userSkills = userSkillDao.findByUser(user);
-        Map<String, Skill> map = new HashMap<>();
-        for (Skill skill : skills) {
-            map.put(skill.getName(), skill);
-        }
-        for (UserSkill userSkill : userSkills) {
-            map.get(userSkill.getSkill().getName()).setPercentage(userSkill.getPercentage());
-        }
+        userSkills.forEach(userSkill -> {
+            if (skills.contains(userSkill)) {
+                skills.get(skills.indexOf(userSkill)).setPercentage(userSkill.getPercentage());
+            }
+        });
+
         return skills;
     }
 

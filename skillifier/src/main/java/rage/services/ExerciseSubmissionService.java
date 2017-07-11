@@ -81,7 +81,7 @@ public class ExerciseSubmissionService {
             temp = Files.createTempDirectory(Paths.get(submissionFolder.toString()), "");
             Path target = Files.createTempFile(temp, "project", ".zip");
             Files.write(target, zip);
-            Exercise excercise = user.getAssignedExercise().getExercise();
+            Exercise excercise = user.getAssignedExercise().get().getExercise();
             tarPath = fileUtils.decompressProjectAndCreateTar(target.toFile(),
                     Paths.get(excercise.getDownloadUrl()));
             return submitExerciseFile(token, tarPath);
@@ -100,7 +100,7 @@ public class ExerciseSubmissionService {
         try {
             SubmissionResult submissionResult = (SubmissionResult)jsonService.fromJson(result.getTestOutput(), SubmissionResult.class);
             User user = userService.oauthFromServer(token);
-            UserExercise userExercise = user.getAssignedExercise();
+            UserExercise userExercise = user.getAssignedExercise().get();
             userExercise.setAttempted(true);
             if (submissionResult.status.toLowerCase().equals("passed")) {
                 Exercise exercise = userExercise.getExercise();

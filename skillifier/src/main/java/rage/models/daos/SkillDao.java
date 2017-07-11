@@ -21,15 +21,15 @@ public interface SkillDao extends CrudRepository<Skill, Long> {
     @Query("SELECT s FROM Course c, Week w, Theme t, Skill s"
             + " WHERE s.theme = t.id AND t.week = w.id AND w.course = c.id"
             + " AND w.weekNumber = :weekNumber AND c.name = :courseName")
-    public List<Skill> findByCourseAndWeek(
+    List<Skill> findByCourseAndWeek(
             @Param("courseName") String courseName, @Param("weekNumber") int weekNumber);
 
     @Query("SELECT s FROM Theme t, Skill s WHERE s.theme = t.id AND t.name = :themeName")
-    public List<Skill> findByTheme(@Param("themeName") String themeName);
+    List<Skill> findByTheme(@Param("themeName") String themeName);
 
     @Query("SELECT s FROM Course c, Week w, Theme t, Skill s"
             + " WHERE s.theme = t.id AND t.week = w.id AND w.course = c.id"
             + " AND c.name = :courseName")
-    public List<Skill> findByCourse(@Param("courseName") String courseName);
+    List<Skill> findByCourse(@Param("courseName") String courseName);
 
 }

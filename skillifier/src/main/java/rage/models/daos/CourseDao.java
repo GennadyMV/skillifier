@@ -13,6 +13,6 @@ public interface CourseDao extends CrudRepository<Course, Long> {
      * @param courseName The name of the Course as a String
      * @return (Course) Course with the corresponding name
      */
-    public Course findByName(@Param("courseName") String courseName);
+    Course findByName(@Param("courseName") String courseName);
     
 }

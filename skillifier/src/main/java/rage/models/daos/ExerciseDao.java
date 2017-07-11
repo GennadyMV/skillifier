@@ -21,6 +21,6 @@ public interface ExerciseDao extends CrudRepository<Exercise, Long> {
     @Query("SELECT DISTINCT e FROM Exercise e, ExerciseSkill es, Skill s, Theme t, Week w, Course c"
             + " WHERE c.id = w.course AND w.id = t.week"
             + " AND t.id = s.theme AND s.id = es.exerciseSkill AND c.name = :courseName")
-    public List<Exercise> findExercises(@Param("courseName") String courseName);
+    List<Exercise> findExercisesByCourse(@Param("courseName") String courseName);
     
 }

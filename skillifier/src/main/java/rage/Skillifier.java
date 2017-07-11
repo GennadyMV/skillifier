@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Skillifier {
-    
+
+    static final Path userDir = Paths.get(System.getProperty("user.dir"));
+
     public static void main(String[] args) {
-        setProductionProperties();
+        setLocalTestProperties();
         SpringApplication.run(Skillifier.class, args);
     }
-    
+
     //For local and unit testing
     public static void setLocalTestProperties() {
         // System properties
