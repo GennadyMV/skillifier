@@ -13,11 +13,9 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "User_Exercise")
-@SuppressWarnings("nullness")
 public class UserExercise implements Serializable {
-    
-    public UserExercise() { }
-    
+
+
     public UserExercise(User user, Exercise exercise, boolean attempted, boolean completed) {
         this.user = user;
         this.exercise = exercise;
@@ -25,15 +23,12 @@ public class UserExercise implements Serializable {
         this.completed = completed;
     }
     
-    // Fields
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
     @JsonIgnore private boolean attempted = false;
     @JsonIgnore private boolean completed = false;
-    @JsonIgnore private boolean allReviewPointsGiven = false;
     @JsonIgnore private boolean returnable = true;
     
     @ManyToOne
@@ -71,18 +66,14 @@ public class UserExercise implements Serializable {
         return completed;
     }
 
-    public boolean isAllReviewPointsGiven() {
-        return allReviewPointsGiven;
-    }
-
-    public void setAllReviewPointsGiven(boolean allReviewPointsGiven) {
-        this.allReviewPointsGiven = allReviewPointsGiven;
-    }
-
-    public UserExercise createAndReturn() {
-        exercise = new Exercise().setAvailableAndReturn(false);
-        return this;
-    }
+//    public UserExercise createAndReturn() {
+//        this.exercise.setAvailableAndReturn(false);
+//        return this;
+//    }
+//
+//    public static UserExercise withUnavailableExercise() {
+//        new UserExercise()
+//    }
 
     public boolean isReturnable() {
         return returnable;

@@ -17,8 +17,10 @@ import rage.models.UserExercise;
 import rage.models.daos.CourseDao;
 import rage.models.daos.UserDao;
 
+import java.util.Optional;
+
 @SpringBootTest
-@SuppressWarnings("nullness")
+
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ExerciseServiceTest {
     
@@ -30,15 +32,18 @@ public class ExerciseServiceTest {
     private int weekNumber;
     private User user;
     
-    @Autowired private CourseDao courseDao;
-    @Autowired private UserDao userDao;
-    @Autowired private ExerciseAssignmentService assignmentService;
-    
-    @Before
-    public void initialize() {
-        course = courseDao.findByName("ohtu-ohpe");
-        weekNumber = 1;
-        user = userDao.findByUsername("Saku");
+    private final CourseDao courseDao;
+    private final UserDao userDao;
+    private final ExerciseAssignmentService assignmentService;
+
+    @Autowired
+    public ExerciseServiceTest(CourseDao courseDao, UserDao userDao, ExerciseAssignmentService assignmentService) {
+        this.courseDao = courseDao;
+        this.userDao = userDao;
+        this.assignmentService = assignmentService;
+        this.course = courseDao.findByName("ohtu-ohpe");
+        this.weekNumber = 1;
+        this.user = userDao.findByUsername("Saku");
     }
     
     @Test
@@ -51,7 +56,7 @@ public class ExerciseServiceTest {
         assignmentService.getNextExercise(course.getName(), weekNumber, user);
         assertEquals(exercise, user.getAssignedExercise());
         // Simulate User submitting the Exercise
-        user.setAssignedExercise(null);
+        user.setAssignedExercise(Optional.empty());
         assertNull(user.getAssignedExercise());
     }
     

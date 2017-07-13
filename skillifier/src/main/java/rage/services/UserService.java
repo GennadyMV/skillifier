@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import rage.exceptions.AuthenticationFailedException;
 import rage.models.User;
 import rage.models.daos.UserDao;
 import rage.models.http.CachedOauth;
@@ -15,16 +16,16 @@ import java.util.Map;
 
 @Service
 @Transactional
-@SuppressWarnings("nullness")
 public class UserService {
 
-    @Autowired
     private UserDao userDao;
 
     private final Map<String, CachedOauth> localCache;
 
-    public UserService() {
+    @Autowired
+    public UserService(UserDao userDao) {
         this.localCache = new HashMap<>();
+        this.userDao = userDao;
     }
 
     /**
@@ -48,7 +49,7 @@ public class UserService {
      * @param token The OAuth token as a String
      * @return (User) User whom the token belongs to
      */
-    public User oauthFromServer(String token) {
+    public User oauthFromServer(String token) throws AuthenticationFailedException {
         if (localCache.containsKey(token)) {
             if (!localCache.get(token).hasExpired()) {
                 return setupUser(localCache.get(token).getResponse().getUsername());
@@ -56,14 +57,9 @@ public class UserService {
         }
         URI url = URI.create(System.getProperty("server.external.oauth") + "?access_token=" + token);
         RestTemplate template = new RestTemplate();
-        try {
-            OauthResponse response = template.getForEntity(url, OauthResponse.class).getBody();
-            localCache.put(token, new CachedOauth(response));
-            return setupUser(response.getUsername());
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
-        return null;
+        OauthResponse response = template.getForEntity(url, OauthResponse.class).getBody();
+        localCache.put(token, new CachedOauth(response));
+        return setupUser(response.getUsername());
     }
 
 }

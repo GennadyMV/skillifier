@@ -3,7 +3,7 @@ package rage.models.http;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
-@SuppressWarnings("nullness")
+
 public class SandboxResult implements Serializable {
 
     private String status;
@@ -19,8 +19,6 @@ public class SandboxResult implements Serializable {
     private String stdout;
 
     private String stderr;
-
-    public SandboxResult() { }
 
     public SandboxResult(String status, String exitCode, String token, String testOutput, String stdout, String stderr) {
         this.status = status;

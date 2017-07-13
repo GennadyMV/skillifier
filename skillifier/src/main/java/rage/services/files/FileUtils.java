@@ -1,10 +1,12 @@
 package rage.services.files;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import fi.helsinki.cs.tmc.langs.util.TaskExecutor;
 import fi.helsinki.cs.tmc.langs.util.TaskExecutorImpl;
@@ -16,17 +18,16 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.springframework.stereotype.Service;
 
 @Service
-@SuppressWarnings("nullness")
 public final class FileUtils {
 
-    private static TaskExecutor taskExecutor;
+    private TaskExecutor taskExecutor;
 
-    private final Path tmcrun = Paths.get(System.getProperty("server.local.references") + "/tmc-run");
-    private final Path langsJar = Paths.get(System.getProperty("server.local.references") + "/tmc-langs.jar");
+    private final Path tmcrun = Paths.get(System.getProperty("server.local.references"), "tmc-run");
+    private final Path langsJar = Paths.get(System.getProperty("server.local.references"), "tmc-langs.jar");
 
     public FileUtils() {
+        this.taskExecutor = new TaskExecutorImpl();
         checkAndCopyLangsJar();
-        taskExecutor = new TaskExecutorImpl();
     }
 
     public void checkAndCopyLangsJar() {
@@ -38,54 +39,56 @@ public final class FileUtils {
         }
     }
 
-    private void extractZip(File file, Path path) throws ZipException, IOException {
-        ZipFile zip = new ZipFile(file);
+    private void extractZip(Path file, Path path) throws ZipException, IOException {
+        ZipFile zip = new ZipFile(file.toFile());
         zip.extractAll(path.toString());
     }
 
     private void moveSubFolderFilesToFolderAndDeleteSubFolder(Path path) throws IOException {
-        for (File file : path.toFile().listFiles()) {
-            if (file.isDirectory()) {
-                for (File subfile : file.listFiles()) {
-                    Files.move(subfile.toPath(), path.resolve(subfile.getName()));
-                }
-                file.delete();
+        for (Path entry : Files.newDirectoryStream(path)) {
+            if (!Files.isDirectory(entry)) {
+                continue;
             }
+            for (Path subFile : Files.newDirectoryStream(entry)) {
+                Files.move(subFile, path.resolve(subFile.getFileName()));
+            }
+            Files.delete(entry);
         }
     }
     
     // TODO: Currently works, but not for any directory setup
     // Therefore it needs fixing unless every directory matches criteria
-    public Path decompressProjectAndCreateTar(File project, Path exercisePath) throws IOException, ZipException, ArchiveException {
-        Path path = Files.createTempDirectory(Paths.get(project.getParent()), "");
+    public Path decompressProjectAndCreateTar(Path project, Path exercisePath) throws IOException, ZipException, ArchiveException {
+        Path path = Files.createTempDirectory(project.getParent(), "");
         Path original = Files.createTempDirectory(path, "");
-        extractZip(exercisePath.toFile(), original);
+        extractZip(exercisePath, original);
         moveSubFolderFilesToFolderAndDeleteSubFolder(original);
-        moveSubFolderFilesToFolderAndDeleteSubFolder(original);
-        deleteFolderAndItsContent(original.resolve("src").toFile());
+        recursiveDelete(original.resolve("src"));
 
         extractZip(project, path);
         moveSubFolderFilesToFolderAndDeleteSubFolder(path);
         taskExecutor.compressTarForSubmitting(path, langsJar, tmcrun,
                 Paths.get(path.toString() + ".tar"));
         if (path.toString() != null) {
-            deleteFolderAndItsContent(path.toFile());
+            recursiveDelete(path);
         }
         return Paths.get(path + ".tar");
     }
 
-    public void deleteFolderAndItsContent(File folder) {
-        File[] files = folder.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    deleteFolderAndItsContent(f);
-                } else {
-                    f.delete();
+
+    public void recursiveDelete(Path path)  {
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(path);
+                    return FileVisitResult.CONTINUE;
                 }
-            }
+            });
+            Files.delete(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        folder.delete();
     }
 
 }

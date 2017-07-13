@@ -12,17 +12,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Exercise_Skill")
-@SuppressWarnings("nullness")
 public class ExerciseSkill implements Serializable {
-    
-    public ExerciseSkill() { }
     
     public ExerciseSkill(Exercise exercise, Skill skill) {
         this.skillExercise = exercise;
         this.exerciseSkill = skill;
     }
-    
-    // Fields
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

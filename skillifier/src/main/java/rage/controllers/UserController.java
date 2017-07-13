@@ -3,6 +3,7 @@ package rage.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import rage.exceptions.AuthenticationFailedException;
 import rage.models.daos.UserDao;
 import rage.services.JsonService;
 import rage.services.UserService;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @RequestMapping("/debug/oauth")
-    public String oauthToUsername(@RequestParam String token) {
+    public String oauthToUsername(@RequestParam String token) throws AuthenticationFailedException {
         return userService.oauthFromServer(token).getUsername();
     }
 

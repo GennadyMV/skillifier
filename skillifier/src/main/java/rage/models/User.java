@@ -2,40 +2,37 @@ package rage.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 @Entity
 @Table(name = "User")
-@SuppressWarnings("nullness")
 public class User implements Serializable {
     
     // TODO: refactor name, SQL doesn't
     // necessarily like "User"
     
-    public User() { }
-    
     public User(String username) {
         this.username = username;
     }
     
-    // Fields
-    
     @Id
     private String username;
     
-    private Optional<UserExercise> assignedExercise;
+    private Optional<UserExercise> assignedExercise = Optional.empty();
     
     @OneToMany(mappedBy = "skill")
-    private Set<UserSkill> skills;
+    private Set<UserSkill> skills = new HashSet<>();
     
     @OneToMany(mappedBy = "exercise")
-    private Set<UserExercise> exercises;
+    private Set<UserExercise> exercises = new HashSet<>();
     
     // Getters and Setters
     
@@ -64,8 +61,8 @@ public class User implements Serializable {
         return assignedExercise;
     }
     
-    public void setAssignedExercise(UserExercise exercise) {
-        this.assignedExercise = Optional.of(exercise);
+    public void setAssignedExercise(Optional<UserExercise> exercise) {
+        this.assignedExercise = exercise;
     }
     
 }

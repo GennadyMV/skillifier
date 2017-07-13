@@ -17,17 +17,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Week")
-@SuppressWarnings("nullness")
 public class Week implements Serializable {
-    
-    public Week() { }
-    
+
     public Week(Course course) {
         this.course = course;
-        themes = new ArrayList<>();
     }
-    
-    // Fields
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +34,7 @@ public class Week implements Serializable {
     private Course course;
     
     @OneToMany(mappedBy = "week", cascade = {CascadeType.ALL})
-    private List<Theme> themes;
+    private List<Theme> themes = new ArrayList<>();
     
     // Getters and Setters
     

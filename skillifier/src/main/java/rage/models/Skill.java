@@ -20,18 +20,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Skill")
-@SuppressWarnings("nullness")
 public class Skill implements Serializable {
-    
-    public Skill() { }
     
     public Skill(String name, Theme theme) {
         this.name = name;
         this.theme = theme;
-        exercises = new HashSet<>();
     }
-    
-    // Fields
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,10 +39,10 @@ public class Skill implements Serializable {
     private Theme theme;
 
     @OneToMany(mappedBy = "exerciseSkill")
-    private Set<ExerciseSkill> exercises;
+    private Set<ExerciseSkill> exercises = new HashSet<>();
     
     @OneToMany(mappedBy = "user")
-    private Set<UserSkill> users;
+    private Set<UserSkill> users = new HashSet<>();
 
     @Transient
     private double percentage;

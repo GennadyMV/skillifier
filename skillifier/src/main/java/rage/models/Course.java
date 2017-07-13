@@ -16,28 +16,18 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "Course")
-@SuppressWarnings("nullness")
 public class Course implements Serializable {
-    
-    public Course() { }
-    
-    public Course(String name) {
-        this.name = name;
-        weeks = new HashSet<>();
-    }
-    
-    // Fields
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
     @NotNull
     @Column(unique = true)
-    private String name;
+    private String name = "";
     
     @OneToMany(mappedBy = "course", cascade = {CascadeType.ALL})
-    private Set<Week> weeks;
+    private Set<Week> weeks = new HashSet<>();
     
     // Getters and Setters
     

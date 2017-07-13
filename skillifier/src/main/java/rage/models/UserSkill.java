@@ -13,19 +13,14 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "User_Skill")
-@SuppressWarnings("nullness")
 public class UserSkill implements Serializable {
-    
-    public UserSkill() { }
     
     public UserSkill(User user, Skill skill, double percentage) {
         this.user = user;
         this.skill = skill;
         this.percentage = percentage;
     }
-    
-    // Fields
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

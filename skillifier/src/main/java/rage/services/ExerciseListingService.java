@@ -16,11 +16,16 @@ import rage.models.daos.UserExerciseDao;
 
 @Service
 @Transactional
-@SuppressWarnings("nullness")
 public class ExerciseListingService {
     
-    @Autowired ExerciseDao exerciseDao;
-    @Autowired UserExerciseDao userExerciseDao;
+    private final ExerciseDao exerciseDao;
+    private final UserExerciseDao userExerciseDao;
+
+    @Autowired
+    public ExerciseListingService(ExerciseDao exerciseDao, UserExerciseDao userExerciseDao) {
+        this.exerciseDao = exerciseDao;
+        this.userExerciseDao = userExerciseDao;
+    }
 
     /**
      * Find the Exercises of the specified Course (per User) to inform TMC-Core about
@@ -40,10 +45,7 @@ public class ExerciseListingService {
 
     private void setExerciseFields(List<UserExercise> userExercises, Map<String, Exercise> map) {
         for (UserExercise userExercise : userExercises) {
-            map.get(userExercise.getExercise().getName()).setAttempted(userExercise.isAttempted());
-            map.get(userExercise.getExercise().getName()).setCompleted(userExercise.isCompleted());
-            map.get(userExercise.getExercise().getName()).setAllReviewPointsGiven(userExercise.isAllReviewPointsGiven());
-            map.get(userExercise.getExercise().getName()).setReturnable(userExercise.isReturnable());
+            userExercise.getExercise().setReturnable(userExercise.isReturnable());
         }
     }
     

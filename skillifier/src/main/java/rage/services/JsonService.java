@@ -9,7 +9,6 @@ import java.io.IOException;
 
 @Service
 @Transactional
-@SuppressWarnings("nullness")
 public class JsonService {
 
     private final ObjectMapper jsonHandler;

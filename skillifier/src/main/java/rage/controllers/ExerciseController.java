@@ -1,11 +1,13 @@
 package rage.controllers;
 
+import org.apache.http.auth.AUTH;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import rage.exceptions.AuthenticationFailedException;
 import rage.models.User;
 import rage.models.UserExercise;
 import rage.models.daos.ExerciseDao;
@@ -50,13 +52,13 @@ public class ExerciseController {
 
     @RequestMapping(value = "/courses/{courseName}/{partNumber}/next.json", params = {"token"})
     public String getNextExercise(
-            @PathVariable String courseName, @PathVariable int partNumber, @RequestParam String token) {
+            @PathVariable String courseName, @PathVariable int partNumber, @RequestParam String token) throws AuthenticationFailedException {
         return jsonService.toJson(exerciseAssignmentService.getNextExercise(courseName, partNumber,
                 userService.oauthFromServer(token)));
     }
 
     @RequestMapping("/courses/{courseName}/users/{userId}/exercises")
-    public String getUsersCourseExercises(@PathVariable String courseName, @RequestParam String token) {
+    public String getUsersCourseExercises(@PathVariable String courseName, @RequestParam String token) throws AuthenticationFailedException {
         return jsonService.toJson(exerciseListingService
                 .addUserSpecificInfoToExercises(userService.oauthFromServer(token), courseName));
     }
@@ -88,8 +90,8 @@ public class ExerciseController {
     }
 
     @RequestMapping(value = "submitZip", params = {"token"}, method = RequestMethod.POST)
-    public Map<String, Serializable> submitExerciseZipByOAuth(@RequestParam String token,
-                                                              @RequestBody byte[] zip) throws IOException {
-        return exerciseSubmissionService.submitExerciseZip(token, zip);
+    public void submitExerciseZipByOAuth(@RequestParam String token,
+                                                              @RequestBody byte[] zip) throws IOException, AuthenticationFailedException {
+        exerciseSubmissionService.submitExerciseZip(token, zip);
     }
 }

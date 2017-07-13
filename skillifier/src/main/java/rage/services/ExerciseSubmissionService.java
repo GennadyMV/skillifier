@@ -1,6 +1,5 @@
 package rage.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.tools.javac.util.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +21,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import rage.exceptions.AuthenticationFailedException;
 import rage.models.Exercise;
 import rage.models.ExerciseSkill;
 import rage.models.User;
@@ -37,42 +37,47 @@ import rage.models.http.SubmissionResult;
 import rage.services.files.FileUtils;
 
 @Service
-@SuppressWarnings("nullness")
 public class ExerciseSubmissionService {
     
-    public final Map<String, SandboxResult> submissions = new HashMap();
-    public List<String> inSubmission;
-    public ArrayDeque<Pair<String, Path>> waitingSubmission;
+    private final Map<String, Optional<SandboxResult>> submissions;
+    private final List<String> inSubmission;
+    private final ArrayDeque<Pair<String, Path>> waitingSubmission;
+    private final UserExerciseDao userExerciseDao;
+    private final UserSkillDao userSkillDao;
+    private final UserService userService;
+    private final FileUtils fileUtils;
+    private final UserDao userDao;
+    private final JsonService jsonService;
 
-    @Autowired private UserExerciseDao userExerciseDao;
-    @Autowired private UserSkillDao userSkillDao;
-    @Autowired private UserService userService;
-    @Autowired private final FileUtils fileUtils;
-    @Autowired private UserDao userDao;
-    @Autowired private JsonService jsonService;
-
-    public ExerciseSubmissionService() {
-        fileUtils = new FileUtils();
-        inSubmission = new ArrayList<>();
-        waitingSubmission = new ArrayDeque<>();
+    @Autowired
+    public ExerciseSubmissionService(UserExerciseDao userExerciseDao, UserSkillDao userSkillDao, UserService userService,
+                                     FileUtils fileUtils, UserDao userDao, JsonService jsonService) {
+        this.inSubmission = new ArrayList<>();
+        this.submissions = new HashMap();
+        this.waitingSubmission = new ArrayDeque<>();
+        this.userExerciseDao = userExerciseDao;
+        this.userSkillDao = userSkillDao;
+        this.userService = userService;
+        this.fileUtils = fileUtils;
+        this.userDao = userDao;
+        this.jsonService = jsonService;
     }
 
-    private Map<String, Serializable> submitExerciseFile(String token, Path tarPath) {
+
+    private void submitExerciseFile(String token, Path tarPath) {
         try {
             if (inSubmission.size() >= 4) {
                 waitingSubmission.add(new Pair<>(token, tarPath));
-                return new HashMap<>();
             }
             inSubmission.add(token);
             HttpResponse response = sendTarToSandbox(tarPath.toFile(), token);
-            submissions.put(token, null);
+            submissions.put(token, Optional.empty());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return new HashMap<>();
     }
 
-    public Map<String, Serializable> submitExerciseZip(String token, byte[] zip) {
+    public void submitExerciseZip(String token, byte[] zip) throws AuthenticationFailedException {
         User user = userService.oauthFromServer(token);
         Path temp = null;
         Path tarPath = null;
@@ -82,27 +87,28 @@ public class ExerciseSubmissionService {
             Path target = Files.createTempFile(temp, "project", ".zip");
             Files.write(target, zip);
             Exercise excercise = user.getAssignedExercise().get().getExercise();
-            tarPath = fileUtils.decompressProjectAndCreateTar(target.toFile(),
+            tarPath = fileUtils.decompressProjectAndCreateTar(target,
                     Paths.get(excercise.getDownloadUrl()));
-            return submitExerciseFile(token, tarPath);
+            submitExerciseFile(token, tarPath);
         } catch (Exception e) {
             System.out.println(e);
         } finally {
-            fileUtils.deleteFolderAndItsContent(temp.toFile());
+            if (temp != null) {
+                fileUtils.recursiveDelete(temp);
+            }
         }
-        return new HashMap<>();
     }
     
-    public void reactToResult(String token, SandboxResult result) {
+    public void reactToResult(String token, SandboxResult result) throws AuthenticationFailedException {
         inSubmission.remove(token);
-        submissions.put(token, result);
+        submissions.put(token, Optional.of(result));
 
         try {
             SubmissionResult submissionResult = (SubmissionResult)jsonService.fromJson(result.getTestOutput(), SubmissionResult.class);
             User user = userService.oauthFromServer(token);
             UserExercise userExercise = user.getAssignedExercise().get();
             userExercise.setAttempted(true);
-            if (submissionResult.status.toLowerCase().equals("passed")) {
+            if (submissionResult.getStatus().toLowerCase().equals("passed")) {
                 Exercise exercise = userExercise.getExercise();
 
                 for (ExerciseSkill skill : exercise.getSkills()) {
@@ -118,7 +124,7 @@ public class ExerciseSubmissionService {
                 userExercise.setAllReviewPointsGiven(true);
                 userExercise.setReturnable(false);
 
-                user.setAssignedExercise(null);
+                user.setAssignedExercise(Optional.empty());
 
                 userDao.save(user);
             }
@@ -132,13 +138,13 @@ public class ExerciseSubmissionService {
         }
     }
     
-    public SandboxResult getResult(String token) {
+    public Optional<SandboxResult> getResult(String token) {
         if (submissions.containsKey(token)) {
-            SandboxResult sandboxResult = submissions.get(token);
+            Optional<SandboxResult> sandboxResult = submissions.get(token);
             submissions.remove(token);
             return sandboxResult;
         }
-        return null;
+        return Optional.empty();
     }
 
     public HttpResponse sendTarToSandbox(File tar, String token) throws IOException {

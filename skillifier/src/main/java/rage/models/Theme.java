@@ -17,18 +17,12 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "Theme")
-@SuppressWarnings("nullness")
 public class Theme implements Serializable {
-    
-    public Theme() { }
-    
+
     public Theme(String name, Week week) {
         this.name = name;
         this.week = week;
-        skills = new HashSet<>();
     }
-    
-    // Fields
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +36,7 @@ public class Theme implements Serializable {
     private Week week;
     
     @OneToMany(mappedBy = "theme", cascade = {CascadeType.ALL})
-    private Set<Skill> skills;
+    private Set<Skill> skills = new HashSet<>();
     
     // Getters and Setters
     

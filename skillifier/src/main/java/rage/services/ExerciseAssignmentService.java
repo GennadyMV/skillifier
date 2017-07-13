@@ -2,13 +2,14 @@ package rage.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Random;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -119,16 +120,13 @@ public class ExerciseAssignmentService {
     }
     
     public Exercise getNextExercise(String courseName, int weekNumber, User user) {
-        if (user == null) {
-            return new UserExercise().createAndReturn().getExercise();
-        }
         if (user.getAssignedExercise() == null) {
             List<Exercise> exercises = gatherParameters(courseName, weekNumber, user);
-            if (exercises.isEmpty()) {
-                return new UserExercise().createAndReturn().getExercise();
-            }
+//            if (exercises.isEmpty()) {
+//                return new UserExercise().createAndReturn().getExercise();
+//            }
             Exercise exercise = exercises.get(new Random().nextInt(exercises.size()));
-            user.setAssignedExercise(new UserExercise(user, exercise, false, false));
+            user.setAssignedExercise(Optional.of(new UserExercise(user, exercise, false, false)));
             userDao.save(user);
         }
         return user.getAssignedExercise().get().getExercise();

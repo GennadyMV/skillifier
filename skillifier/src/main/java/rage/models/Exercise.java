@@ -18,18 +18,11 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "Exercise")
-@SuppressWarnings("nullness")
 public class Exercise implements Serializable {
-
-    public Exercise() {
-    }
 
     public Exercise(String name) {
         this.name = name;
-        skills = new HashSet<>();
     }
-
-    // Fields
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,19 +36,10 @@ public class Exercise implements Serializable {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "skillExercise")
-    private Set<ExerciseSkill> skills;
+    private Set<ExerciseSkill> skills  = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<UserExercise> users;
-
-    @Transient
-    private boolean attempted = false;
-
-    @Transient
-    private boolean completed = false;
-
-    @Transient
-    private boolean allReviewPointsGiven = false;
+    private Set<UserExercise> users  = new HashSet<>();
 
     @Transient
     private boolean returnable = true;
@@ -71,7 +55,7 @@ public class Exercise implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -119,33 +103,8 @@ public class Exercise implements Serializable {
         this.skills = skills;
     }
 
-    public void setAttempted(boolean attempted) {
-        this.attempted = attempted;
-    }
-
-    public boolean isAttempted() {
-        return attempted;
-    }
-
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
     public void setReturnable(boolean returnable) {
         this.returnable = returnable;
-    }
-
-    public void setAllReviewPointsGiven(boolean allReviewPointsGiven) {
-        this.allReviewPointsGiven = allReviewPointsGiven;
-    }
-
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    @JsonProperty("all_review_points_given")
-    public boolean isAllReviewPointsGiven() {
-        return allReviewPointsGiven;
     }
 
     public int getWeekNumber() {

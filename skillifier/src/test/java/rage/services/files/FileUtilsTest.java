@@ -19,7 +19,7 @@ import rage.Skillifier;
 
 
 @SpringBootTest
-@SuppressWarnings("nullness")
+
 @RunWith(SpringJUnit4ClassRunner.class)
 public class FileUtilsTest {
     
@@ -27,12 +27,17 @@ public class FileUtilsTest {
         Skillifier.setLocalTestProperties();
     }
 
-    @Autowired private FileUtils utils;
+    private final FileUtils utils;
+
+    @Autowired
+    public FileUtilsTest(FileUtils utils) {
+        this.utils = utils;
+    }
 
     @Test
     public void testDir() throws IOException, ZipException, ArchiveException {
         Path dataFile = Paths.get(System.getProperty("user.dir") + "/src/test/testResources/data.zip");
-        File srcFile = Paths.get(System.getProperty("user.dir") + "/src/test/testResources/exe.zip").toFile();
+        Path srcFile = Paths.get(System.getProperty("user.dir") + "/src/test/testResources/exe.zip");
         File createdTarFile = utils.decompressProjectAndCreateTar(srcFile,dataFile).toFile();
         assertNotNull(createdTarFile);
         assertTrue(createdTarFile.exists());
