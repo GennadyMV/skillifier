@@ -124,7 +124,7 @@ public class ExerciseAssignmentService {
 //                return new UserExercise().createAndReturn().getExercise();
 //            }
             Exercise exercise = exercises.get(new Random().nextInt(exercises.size()));
-            user.setAssignedExercise(Optional.of(new UserExercise(user, exercise, false, false)));
+            user.setAssignedExercise(new UserExercise(user, exercise, false, false));
             userDao.save(user);
         }
         return user.getAssignedExercise().get().getExercise();

@@ -127,7 +127,7 @@ public class ExerciseSubmissionService {
                 userExercise.setCompleted(true);
                 userExercise.setReturnable(false);
 
-                user.setAssignedExercise(Optional.empty());
+                user.setAssignedExercise(null);
 
                 userDao.save(user);
             }

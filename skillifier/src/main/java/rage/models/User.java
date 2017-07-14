@@ -26,7 +26,7 @@ public class User implements Serializable {
     @Id
     private String username;
     
-    private Optional<UserExercise> assignedExercise = Optional.empty();
+    @Nullable private UserExercise assignedExercise = null;
     
     @OneToMany(mappedBy = "skill")
     private Set<UserSkill> skills = new HashSet<>();
@@ -58,10 +58,13 @@ public class User implements Serializable {
     }
     
     public Optional<UserExercise> getAssignedExercise() {
-        return assignedExercise;
+        if (this.assignedExercise == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(this.assignedExercise);
     }
     
-    public void setAssignedExercise(Optional<UserExercise> exercise) {
+    public void setAssignedExercise(@Nullable UserExercise exercise) {
         this.assignedExercise = exercise;
     }
     

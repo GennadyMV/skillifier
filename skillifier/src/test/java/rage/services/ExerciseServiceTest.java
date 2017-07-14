@@ -57,7 +57,7 @@ public class ExerciseServiceTest {
         assignmentService.getNextExercise(course.getName(), weekNumber, user);
         assertEquals(exercise, user.getAssignedExercise());
         // Simulate User submitting the Exercise
-        user.setAssignedExercise(Optional.empty());
+        user.setAssignedExercise(null);
         assertNull(user.getAssignedExercise());
     }
     
