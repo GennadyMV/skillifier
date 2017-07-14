@@ -82,7 +82,11 @@ public class ExerciseSubmissionService {
         Path temp = null;
         Path tarPath = null;
         try {
-            Path submissionFolder = Paths.get(System.getProperty("server.local.submissions"));
+            String localSubmissions = System.getProperty("server.local.submissions");
+            if (localSubmissions == null) {
+                throw new RuntimeException("server.local.submissions is not defined!");
+            }
+            Path submissionFolder = Paths.get(localSubmissions);
             temp = Files.createTempDirectory(Paths.get(submissionFolder.toString()), "");
             Path target = Files.createTempFile(temp, "project", ".zip");
             Files.write(target, zip);
@@ -121,7 +125,6 @@ public class ExerciseSubmissionService {
                 }
 
                 userExercise.setCompleted(true);
-                userExercise.setAllReviewPointsGiven(true);
                 userExercise.setReturnable(false);
 
                 user.setAssignedExercise(Optional.empty());
@@ -149,7 +152,7 @@ public class ExerciseSubmissionService {
 
     public HttpResponse sendTarToSandbox(File tar, String token) throws IOException {
         byte[] data = Files.readAllBytes(tar.toPath());
-
+        System.out.println("kikuli");
         final MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
         entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
@@ -158,7 +161,11 @@ public class ExerciseSubmissionService {
         entityBuilder.addTextBody("notify", "http://localhost:3000/result", ContentType.create("text/plain", "utf-8"));
         entityBuilder.addTextBody("token", token, ContentType.create("text/plain", "utf-8"));
 
-        HttpPost request = new HttpPost(System.getProperty("server.external.sandbox"));
+        String externalSandbox = System.getProperty("server.external.sandbox");
+        if (externalSandbox == null) {
+            throw new RuntimeException("server.external.sandbox is not defined!");
+        }
+        HttpPost request = new HttpPost(externalSandbox);
         request.setEntity(entityBuilder.build());
         HttpResponse response = HttpClients.createDefault().execute(request);
         return response;

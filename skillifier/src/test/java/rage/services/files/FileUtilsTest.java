@@ -17,6 +17,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import rage.Skillifier;
 
+import javax.annotation.Nullable;
+
 
 @SpringBootTest
 
@@ -27,12 +29,8 @@ public class FileUtilsTest {
         Skillifier.setLocalTestProperties();
     }
 
-    private final FileUtils utils;
-
-    @Autowired
-    public FileUtilsTest(FileUtils utils) {
-        this.utils = utils;
-    }
+    @SuppressWarnings("Nullness")
+    @Autowired private FileUtils utils;
 
     @Test
     public void testDir() throws IOException, ZipException, ArchiveException {

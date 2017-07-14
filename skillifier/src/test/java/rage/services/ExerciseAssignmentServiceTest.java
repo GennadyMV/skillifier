@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,7 @@ public class ExerciseAssignmentServiceTest {
     private final UserDao userDao;
     private final ExerciseAssignmentService assignmentService;
 
+    @Autowired
     public ExerciseAssignmentServiceTest(CourseDao courseDao, UserDao userDao, ExerciseAssignmentService assignmentService) {
         this.courseDao = courseDao;
         this.userDao = userDao;

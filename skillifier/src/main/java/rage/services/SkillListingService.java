@@ -1,12 +1,11 @@
 package rage.services;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.transaction.annotation.Transactional;
 
 import rage.models.Skill;
 import rage.models.User;
@@ -14,7 +13,10 @@ import rage.models.UserSkill;
 import rage.models.daos.SkillDao;
 import rage.models.daos.UserSkillDao;
 
+
+
 @Service
+@Transactional
 public class SkillListingService {
     
     final SkillDao skillDao;

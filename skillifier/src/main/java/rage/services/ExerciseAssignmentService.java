@@ -82,22 +82,20 @@ public class ExerciseAssignmentService {
     
     private List<Exercise> findLowest(Map<Double, Skill> sorted, List<Exercise> exercises) {
         List<Exercise> availableExercises = new ArrayList<>();
-        Set skillSet = sorted.entrySet();
-        Iterator iterator = skillSet.iterator();
-        while (iterator.hasNext()) {
-            Entry entry = (Entry)iterator.next();
-            availableExercises = checkSkillExercises((Skill)entry.getValue(), exercises);
-            if (!checkSkillExercises((Skill)entry.getValue(), exercises).isEmpty()) {
+        for (Skill skill : sorted.values()) {
+            availableExercises = checkSkillExercises(skill, exercises);
+            if (!availableExercises.isEmpty()) {
                 return availableExercises;
             }
         }
+
         return new ArrayList<>();
     }
     
     private List<Exercise> sortAndFindLowest(Map<Skill, Double> skills, List<Exercise> exercises) {
         Map<Double, Skill> inverse = new HashMap<>();
-        for (Entry entry : skills.entrySet()) {
-            inverse.put((Double)entry.getValue(), (Skill)entry.getKey());
+        for (Skill skill : skills.keySet()) {
+            inverse.put(skills.get(skill), skill);
         }
         Map<Double, Skill> sorted = new TreeMap<>(inverse);
         return findLowest(sorted, exercises);

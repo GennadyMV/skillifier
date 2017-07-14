@@ -22,18 +22,19 @@ public final class FileUtils {
 
     private TaskExecutor taskExecutor;
 
-    private final Path tmcrun = Paths.get(System.getProperty("server.local.references"), "tmc-run");
-    private final Path langsJar = Paths.get(System.getProperty("server.local.references"), "tmc-langs.jar");
-
     public FileUtils() {
         this.taskExecutor = new TaskExecutorImpl();
         checkAndCopyLangsJar();
     }
 
     public void checkAndCopyLangsJar() {
-        Path parent = Paths.get(System.getProperty("server.local.langs"));
+        String localLangs = System.getProperty("server.local.langs");
+        if (localLangs == null) {
+            throw new RuntimeException("server.local.langs is not defined");
+        }
+        Path parent = Paths.get(localLangs);
         try {
-            Files.copy(parent, langsJar);
+            Files.copy(parent, tmcLangsPath());
         } catch (IOException e) {
             System.out.println("File already exists ? " + e.toString());
         }
@@ -67,7 +68,7 @@ public final class FileUtils {
 
         extractZip(project, path);
         moveSubFolderFilesToFolderAndDeleteSubFolder(path);
-        taskExecutor.compressTarForSubmitting(path, langsJar, tmcrun,
+        taskExecutor.compressTarForSubmitting(path, tmcLangsPath(), tmcRunPath(),
                 Paths.get(path.toString() + ".tar"));
         if (path.toString() != null) {
             recursiveDelete(path);
@@ -90,5 +91,25 @@ public final class FileUtils {
             e.printStackTrace();
         }
     }
+
+    private static Path tmcRunPath() {
+        String property = System.getProperty("server.local.references");
+        if (property == null) {
+            throw new RuntimeException("server.local.references is not defined");
+        }
+        return Paths.get(property, "tmc-run");
+
+    }
+
+    private static Path tmcLangsPath() {
+        String property = System.getProperty("server.local.references");
+        if (property == null) {
+            throw new RuntimeException("server.local.references is not defined");
+        }
+        return Paths.get(property, "tmc-langs.jar");
+
+    }
+
+
 
 }
