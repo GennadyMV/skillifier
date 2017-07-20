@@ -21,6 +21,11 @@ public class UserSkill implements Serializable {
         this.percentage = percentage;
     }
 
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private UserSkill() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

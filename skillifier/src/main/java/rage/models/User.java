@@ -22,6 +22,11 @@ public class User implements Serializable {
     public User(String username) {
         this.username = username;
     }
+
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private User() {
+    }
     
     @Id
     private String username;

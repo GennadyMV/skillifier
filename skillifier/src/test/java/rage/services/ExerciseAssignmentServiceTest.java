@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
+@SuppressWarnings("initialization.fields.uninitialized")
 public class ExerciseAssignmentServiceTest {
 
     static {
@@ -29,21 +31,17 @@ public class ExerciseAssignmentServiceTest {
     private Course course;
     private int weekNumber;
     private User user;
-    
-    private final CourseDao courseDao;
-    private final UserDao userDao;
-    private final ExerciseAssignmentService assignmentService;
 
-    @Autowired
-    public ExerciseAssignmentServiceTest(CourseDao courseDao, UserDao userDao, ExerciseAssignmentService assignmentService) {
-        this.courseDao = courseDao;
-        this.userDao = userDao;
-        this.assignmentService = assignmentService;
+    @Autowired private CourseDao courseDao;
+    @Autowired private UserDao userDao;
+    @Autowired private ExerciseAssignmentService assignmentService;
+
+    @Before
+    public void lolled() {
         this.course = courseDao.findByName("ohtu-ohpe");
         this.weekNumber = 1;
         this.user = userDao.findByUsername("Saku");
     }
-
 
     @Test
     public void userTrackingExercise() {
@@ -53,10 +51,10 @@ public class ExerciseAssignmentServiceTest {
         // Make sure Exercise has been assigned
         UserExercise exercise = user.getAssignedExercise().get();
         assignmentService.getNextExercise(course.getName(), weekNumber, user);
-        assertEquals(exercise, user.getAssignedExercise());
+        assertEquals(exercise, user.getAssignedExercise().get());
         // Simulate User submitting the Exercise
         user.setAssignedExercise(null);
-        assertNull(user.getAssignedExercise());
+        assertEquals(user.getAssignedExercise(), Optional.empty());
     }
     
 }

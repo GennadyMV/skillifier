@@ -24,6 +24,11 @@ public class Exercise implements Serializable {
         this.name = name;
     }
 
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private Exercise() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

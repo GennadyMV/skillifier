@@ -118,7 +118,7 @@ public class ExerciseAssignmentService {
     }
     
     public Exercise getNextExercise(String courseName, int weekNumber, User user) {
-        if (user.getAssignedExercise() == null) {
+        if (!user.getAssignedExercise().isPresent()) {
             List<Exercise> exercises = gatherParameters(courseName, weekNumber, user);
 //            if (exercises.isEmpty()) {
 //                return new UserExercise().createAndReturn().getExercise();

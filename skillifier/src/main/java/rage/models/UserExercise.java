@@ -22,6 +22,11 @@ public class UserExercise implements Serializable {
         this.attempted = attempted;
         this.completed = completed;
     }
+
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private UserExercise() {
+    }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -27,6 +27,11 @@ public class Skill implements Serializable {
         this.theme = theme;
     }
 
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private Skill() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -22,6 +22,11 @@ public class Week implements Serializable {
     public Week(Course course) {
         this.course = course;
     }
+
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private Week() {
+    }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -23,6 +23,11 @@ public class Theme implements Serializable {
         this.name = name;
         this.week = week;
     }
+
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private Theme() {
+    }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

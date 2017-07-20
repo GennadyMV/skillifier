@@ -18,6 +18,11 @@ public class ExerciseSkill implements Serializable {
         this.skillExercise = exercise;
         this.exerciseSkill = skill;
     }
+
+    // Required by Hibernate
+    @SuppressWarnings("initialization.fields.uninitialized")
+    private ExerciseSkill() {
+    }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
